@@ -9,13 +9,13 @@ import Button from '../components/Button';
 function Post() {
   const navigate = useNavigate();
   const [post, setPost] = useState(null)
-  const { postid } = useParams();
+  const { slug } = useParams();
 
   const userdata = useSelector((state) => state.auth.userdata);
 
   useEffect(() => {
-    if (postid) {
-      service.getPost(postid).then((res) => {
+    if (slug) {
+      service.getPost(slug).then((res) => {
         if (res) {
           setPost(res);
         } else {
@@ -23,15 +23,15 @@ function Post() {
         }
       })
     }
-  }, [postid, navigate]);
+  }, [slug, navigate]);
 
-  const auther = userdata && post ? (userdata.$id === post.autherId) : false;
+  const isAuthor = userdata && post ? (userdata.$id === post.UserId) : false;
 
   const Delete = async () => {
-    if (auther) {
+    if (isAuthor) {
       await service.DeletePost(post.$id).then((res) => {
         if (res) {
-          service.deleteFile(post.featuredImage);
+          service.deleteFile(post.FeaturedImage);
           navigate('/');
         }
       });
@@ -46,8 +46,8 @@ function Post() {
       <div className="px-4 md:px-8 lg:px-16 max-w-4xl mx-auto">
         <div className="w-full flex justify-center mb-4 relative border rounded-xl p-2">
           <img
-            src={service.getFilePreview(post.featuredImage)}
-            alt={post.title}
+            src={service.getFilePreview(post.FeaturedImage)}
+            alt={post.Title}
             className="rounded-xl"
           />
           <div className="absolute right-6 top-6">
@@ -65,10 +65,10 @@ function Post() {
 
         </div>
         <div className="w-full mb-6">
-          <h1 className="text-2xl font-bold">{post.title}</h1>
+          <h1 className="text-2xl font-bold">{post.Title}</h1>
         </div>
         <div className="browser-css">
-          {parse(post.content)}
+          {parse(post.Content)}
         </div>
       </div>
     </div>

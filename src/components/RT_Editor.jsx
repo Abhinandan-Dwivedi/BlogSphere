@@ -14,9 +14,10 @@ function RT_Editor({ name, control, label, defaultValue = "" }) {
         name={name || "content"}
         control={control}
         defaultValue={defaultValue}   
+        rules={{ required: true }}
         render={({ field: { onChange, value } }) => (
           <Editor
-            apiKey= "om78ef4wsnk9xk2etuj9zywu9yppm8ny3ohnn0mtmx8zbcj9"
+            apiKey={conf.TinyMCE_apikey}
             value={value}             
             init={{
               height: 500,

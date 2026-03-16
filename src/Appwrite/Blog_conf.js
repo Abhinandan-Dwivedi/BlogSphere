@@ -16,37 +16,36 @@ export class Blogservice {
         this.bucket = new Storage(this.client);
     }
     
-    async  CreatePost({title, postid , content, featuredImage, status, userId}){
-        try {
-            return await this.databases.createDocument(
-                conf.appwrite_databaseid,
-                conf.appwrite_tableid,
-                postid,
-                {
-                    title,
-                    content,
-                    featuredImage,
-                    status,
-                    userId,
-                } 
-            )
-        } catch (error) {
-            console.log("Appwrite serive :: createPost :: error", error);
+        async  CreatePost({title, content, featuredImage, status, userId}){
+            try {
+                return await this.databases.createDocument(
+                    conf.appwrite_databaseid,
+                    conf.appwrite_tableid,
+                    ID.unique(),
+                    {
+                        Title: title,
+                        Content: content,
+                        FeaturedImage: featuredImage,
+                        status: status,
+                        userId: userId,
+                    }
+                )
+            } catch (error) {
+                console.log("Appwrite serive :: createPost :: error", error);
+            }
         }
-    }
-
-    async UpdatePost(postid, {title, content, featuredImage, status}){
+    async UpdatePost(slug, {title, content, featuredImage, status, userId}){
         try {
             return await this.databases.updateDocument(
                 conf.appwrite_databaseid,
                 conf.appwrite_tableid,
-                postid,
+                slug,
                 {
-                    title,
-                    content,
-                    featuredImage,
-                    status,
-
+                    Title: title,
+                    Content: content,
+                    FeaturedImage: featuredImage,
+                    status: status,
+                    userId: userId,
                 }
             )
         } catch (error) {
@@ -54,12 +53,12 @@ export class Blogservice {
         }
     }
 
-    async DeletePost(postid){
+    async DeletePost(slug){
         try {
             await this.databases.deleteDocument(
                 conf.appwrite_databaseid,
                 conf.appwrite_tableid,
-                postid
+                slug
             
             )
             return true
@@ -69,12 +68,12 @@ export class Blogservice {
         }
     }
 
-    async getPost(postid){ 
+    async getPost(slug){ 
         try {
             return await this.databases.getDocument(
                   conf.appwrite_databaseid,
                 conf.appwrite_tableid,
-                postid
+                slug
             
             )
         } catch (error) {
@@ -115,11 +114,13 @@ export class Blogservice {
 
     async deleteFile(fileId){
         try {
-            await this.bucket.deleteFile(
-                conf.appwrite_bucketid,
-                fileId
-            )
-            return true
+            if (fileId) {
+                await this.bucket.deleteFile(
+                    conf.appwrite_bucketid,
+                    fileId
+                );
+            }
+            return true;
         } catch (error) {
             console.log("Appwrite serive :: deleteFile :: error", error);
             throw error;
@@ -127,10 +128,13 @@ export class Blogservice {
     }
 
     getFilePreview(fileId){
-        return this.bucket.getFilePreview(
-            conf.appwrite_bucketid,
-            fileId
-        )
+        if (fileId) {
+            return this.bucket.getFilePreview(
+                conf.appwrite_bucketid,
+                fileId
+            );
+        }
+        return null;
     }
 }
 const service = new  Blogservice();

@@ -13,7 +13,7 @@ function Postform({ post }) {
     const { register, handleSubmit, watch, setValue, control, getValues } = useForm({
         defaultValues: {
             title: post?.title || "",
-            postid: post?.$id || "",
+            slug: post?.$id || "",
             content: post?.content || "",
             status: post?.status || "active",
         }
@@ -22,61 +22,81 @@ function Postform({ post }) {
     const userData = useSelector((state) => state.auth.userData);
 
     const submitbtn = async (data) => {
-        console.log("statrting of submitbtn function")
-        if (post) {
-            const file = data.image[0] ? await service.uploadFile(data.image[0]) : null;
+        if (!userData) {
+            console.error("User data is not available.");
+            return;
+        }
+        try {
+            console.log("statrting of submitbtn function")
+            if (post) {
+                const file = data.image[0] ? await service.uploadFile(data.image[0]) : null;
 
-            if (file) {
-                service.deleteFile(post.featuredImage);
-            }
-            console.log("Updating post with data: starting of $id", data);
-            const dbPost = await service.UpdatePost(post.$id, {
-                ...data,
-                featuredImage: file ? file.$id : undefined,
-            });
-
-            if (dbPost) {
-                navigate(`/post/${dbPost.$id}`);
-            }
-        } else {
-            const file = await service.uploadFile(data.image[0]);
-            if (file) {
-                const fileId = file.$id;
-                data.featuredImage = fileId;
-                console.log("userData:", userData);
-
-                const dbPost = await service.CreatePost({ ...data, userId: userData.$id });
+                if (file) {
+                    service.deleteFile(post.featuredImage);
+                }
+                console.log("Updating post with data: starting of $id", data);
+                const dbPost = await service.UpdatePost(post.$id, {
+                    title: data.title,
+                    content: data.content,
+                    featuredImage: file ? file.$id : undefined,
+                    status: data.status,
+                });
 
                 if (dbPost) {
                     navigate(`/post/${dbPost.$id}`);
                 }
+            } else {
+                const file = await service.uploadFile(data.image[0]);
+                if (file) {
+                    const fileId = file.$id;
+                    data.featuredImage = fileId;
+                    console.log("userData:", userData);
+
+                    const dbPost = await service.CreatePost({
+                        title: data.title,
+                        content: data.content,
+                        featuredImage: fileId,
+                        status: data.status,
+                        userId: userData.$id,
+                    });
+
+                    if (dbPost) {
+                        navigate(`/post/${dbPost.$id}`);
+                    }
+                }
             }
+            console.log("submit is finised here ");
+        } catch (error) {
+            console.error("Error in submitbtn:", error);
         }
-        console.log("submit is finised here ");
     }
-    const postidTransform = useCallback((value) => {
+
+    const slugTransform = useCallback((value) => {
         if (value && typeof value === "string")
             return value
                 .trim()
                 .toLowerCase()
                 .replace(/[^a-zA-Z\d\s]+/g, "-")
-                .replace(/\s/g, "-");
+                .replace(/\s+/g, "-");
 
         return "";
     }, []);
 
+    const onInvalid = (errors) => {
+        console.error("Form validation errors:", errors);
+    };
     React.useEffect(() => {
         const subscription = watch((value, { name }) => {
             if (name === "title") {
-                setValue("postid", postidTransform(value.title), { shouldValidate: true });
+                setValue("slug", slugTransform(value.title), { shouldValidate: true });
             }
         });
 
         return () => subscription.unsubscribe();
-    }, [watch, postidTransform, setValue]);
+    }, [watch, slugTransform, setValue]);
 
     return (
-        <form onSubmit={handleSubmit(submitbtn)} className="flex flex-wrap">
+        <form onSubmit={handleSubmit(submitbtn, onInvalid)} className="flex flex-wrap">
             <div className="w-2/3 px-2">
                 <Input
                     label="title :"
@@ -85,12 +105,12 @@ function Postform({ post }) {
                     {...register("title", { required: true })}
                 />
                 <Input
-                    label="postid:"
-                    placeholder="postid"
+                    label="Slug:"
+                    placeholder="Slug"
                     className="mb-4"
-                    {...register("postid", { required: true })}
+                    {...register("slug", { required: true })}
                     onInput={(e) => {
-                        setValue("postid", postidTransform(e.currentTarget.value), { shouldValidate: true });
+                        setValue("slug", slugTransform(e.currentTarget.value), { shouldValidate: true });
                     }}
                 />
                 <RT_Editor label="Content :" name="content" control={control} defaultValue={getValues("content")} />
@@ -119,8 +139,7 @@ function Postform({ post }) {
                     {...register("status", { required: true })}
                 />
                 <Button type="submit" bgColor={post ? "bg-green-500" : undefined} className="w-full">
-                    { console.log("submit button is cllled ")}
-                    { post ? "Update" : "Submit"}
+                    {post ? "Update" : "Submit"}
                 </Button>
             </div>
         </form>
