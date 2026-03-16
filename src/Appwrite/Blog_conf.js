@@ -27,7 +27,7 @@ export class Blogservice {
                         Content: content,
                         FeaturedImage: featuredImage,
                         status: status,
-                        userId: userId,
+                        UserId: userId,
                     }
                 )
             } catch (error) {
@@ -45,7 +45,7 @@ export class Blogservice {
                     Content: content,
                     FeaturedImage: featuredImage,
                     status: status,
-                    userId: userId,
+                    UserId: userId,
                 }
             )
         } catch (error) {

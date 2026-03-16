@@ -12,7 +12,7 @@ import service from "../Appwrite/Blog_conf.js";
 function Postform({ post }) {
     const { register, handleSubmit, watch, setValue, control, getValues } = useForm({
         defaultValues: {
-            title: post?.title || "",
+            Title: post?.title || "",
             slug: post?.$id || "",
             content: post?.content || "",
             status: post?.status || "active",
@@ -32,13 +32,13 @@ function Postform({ post }) {
                 const file = data.image[0] ? await service.uploadFile(data.image[0]) : null;
 
                 if (file) {
-                    service.deleteFile(post.featuredImage);
+                    service.deleteFile(post.FeaturedImage);
                 }
                 console.log("Updating post with data: starting of $id", data);
                 const dbPost = await service.UpdatePost(post.$id, {
-                    title: data.title,
+                    Title: data.title,
                     content: data.content,
-                    featuredImage: file ? file.$id : undefined,
+                    FeaturedImage: file ? file.$id : undefined,
                     status: data.status,
                 });
 
@@ -49,15 +49,15 @@ function Postform({ post }) {
                 const file = await service.uploadFile(data.image[0]);
                 if (file) {
                     const fileId = file.$id;
-                    data.featuredImage = fileId;
+                    data.FeaturedImage = fileId;
                     console.log("userData:", userData);
 
                     const dbPost = await service.CreatePost({
-                        title: data.title,
-                        content: data.content,
-                        featuredImage: fileId,
+                        Title: data.title,
+                        Content: data.content,
+                        FeaturedImage: fileId,
                         status: data.status,
-                        userId: userData.$id,
+                        UserId: userData.$id,
                     });
 
                     if (dbPost) {
@@ -88,7 +88,7 @@ function Postform({ post }) {
     React.useEffect(() => {
         const subscription = watch((value, { name }) => {
             if (name === "title") {
-                setValue("slug", slugTransform(value.title), { shouldValidate: true });
+                setValue("slug", slugTransform(value.Title), { shouldValidate: true });
             }
         });
 
@@ -126,7 +126,7 @@ function Postform({ post }) {
                 {post && (
                     <div className="w-full mb-4">
                         <img
-                            src={service.getFilePreview(post.featuredImage)}
+                            src={service.getFilePreview(post.FeaturedImage)}
                             alt={post.title}
                             className="rounded-lg"
                         />
