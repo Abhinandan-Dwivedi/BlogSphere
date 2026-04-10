@@ -10,20 +10,23 @@ export default function Editpost() {
     const navigate = useNavigate();
 
     useEffect (()=>{
-        service.getPost(postid).then((res)=>{
-            if ( res ){
-                setpost(res); 
-            }
-            else {
-                navigate('/notfound'); 
-            }
-        })
-    } , [postid , navigate]); 
+        if (postid) {
+            service.getPost(postid).then((res)=>{
+                if ( res ){
+                    setpost(res);
+                }
+                else {
+                    navigate('/');
+                }
+            })
+        }
+    } , [postid , navigate]);
+
   return post ?  (
     <div className='w-full py-5'>
         <div className='w-full max-w-7xl mx-auto px-4'>
-            <Postform post = {post} />
-            </div>
+            <Postform post={post} />
+        </div>
     </div>
   ) : null ;
 }

@@ -1,27 +1,80 @@
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  width: 100%;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  text-align: left;
+  background: #09090b;
+  color: #f4f4f5;
+  overflow-x: hidden;
+  position: relative;
 }
 
+ 
+#root::before,
+#root::after {
+  content: "";
+  position: fixed;
+  border-radius: 9999px;
+  filter: blur(120px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+#root::before {
+  top: -120px;
+  left: -120px;
+  width: 320px;
+  height: 320px;
+  background: rgba(113, 113, 122, 0.18);
+}
+
+#root::after {
+  right: -120px;
+  bottom: -120px;
+  width: 420px;
+  height: 420px;
+  background: rgba(161, 161, 170, 0.1);
+}
+
+ 
+.glass {
+  background: rgba(24, 24, 27, 0.7);
+  border: 1px solid rgba(63, 63, 70, 0.7);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow:
+    0 0 30px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+ 
 .logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+  height: 5.5em;
+  padding: 1rem;
+  border-radius: 1.5rem;
+  transition:
+    transform 300ms ease,
+    filter 300ms ease,
+    background 300ms ease;
 }
 
+.logo:hover {
+  transform: translateY(-2px) scale(1.03);
+  filter: drop-shadow(0 0 1.5rem rgba(161, 161, 170, 0.25));
+  background: rgba(39, 39, 42, 0.35);
+}
+
+.logo.react:hover {
+  filter: drop-shadow(0 0 1.5rem rgba(212, 212, 216, 0.2));
+}
+
+ 
 @keyframes logo-spin {
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -29,14 +82,28 @@
 
 @media (prefers-reduced-motion: no-preference) {
   a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
+    animation: logo-spin 18s linear infinite;
   }
 }
 
+ 
 .card {
-  padding: 2em;
+  padding: 2rem;
+  border-radius: 1.5rem;
+  background: rgba(24, 24, 27, 0.75);
+  border: 1px solid rgba(63, 63, 70, 0.7);
+  backdrop-filter: blur(16px);
+  box-shadow:
+    0 0 30px rgba(0, 0, 0, 0.35),
+    0 0 12px rgba(113, 113, 122, 0.08);
 }
 
+ 
 .read-the-docs {
-  color: #888;
+  color: #a1a1aa;
+  transition: color 200ms ease;
+}
+
+.read-the-docs:hover {
+  color: #d4d4d8;
 }
